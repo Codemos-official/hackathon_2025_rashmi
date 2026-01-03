@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Paths - AI Resume Analyzer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --gray: #6b7280;
+            --light-gray: #e5e7eb;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --sidebar-width: 280px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 30px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 5px 0 20px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 0 25px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: #fbbf24;
+        }
+
+        .nav-section {
+            margin-bottom: 30px;
+        }
+
+        .nav-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 25px;
+            margin-bottom: 15px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+        }
+
+        .nav-links {
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-bottom: 5px;
+        }
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 25px;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left-color: #fbbf24;
+        }
+
+        .nav-links a.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border-left-color: #fbbf24;
+        }
+
+        .nav-links i {
+            width: 20px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title h1 {
+            font-size: 2.2rem;
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .page-title p {
+            color: var(--gray);
+            margin-top: 8px;
+            font-size: 1.1rem;
+        }
+
+        .page-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Mobile Menu Toggle - ADDED THIS */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 101;
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark);
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-label {
+            font-weight: 500;
+            color: var(--gray);
+            white-space: nowrap;
+        }
+
+        .filter-select {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--light-gray);
+            background: white;
+            color: var(--dark);
+            font-weight: 500;
+            min-width: 150px;
+            cursor: pointer;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 1px solid var(--light-gray);
+            font-size: 1rem;
+            background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236b7280' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") no-repeat 15px center;
+            padding-left: 45px;
+        }
+
+        /* Categories */
+        .categories {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .category-tag {
+            padding: 12px 24px;
+            background: white;
+            border-radius: 30px;
+            font-weight: 500;
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-tag:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .category-tag.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Learning Paths Grid */
+        .learning-paths {
+            margin-bottom: 40px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .section-subtitle {
+            color: var(--gray);
+            margin-top: 5px;
+        }
+
+        .paths-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        /* Course Card - Exactly like your image */
+        .course-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            border: 1px solid var(--light-gray);
+        }
+
+        .course-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .course-card.featured {
+            border-top: 4px solid var(--accent);
+        }
+
+        .course-header {
+            padding: 25px 25px 15px;
+            position: relative;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .course-category {
+            position: absolute;
+            top: -12px;
+            left: 25px;
+            background: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.1);
+        }
+
+        .course-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .course-badge.free {
+            background: linear-gradient(135deg, var(--secondary), #34d399);
+        }
+
+        .course-badge.premium {
+            background: linear-gradient(135deg, var(--accent), #fbbf24);
+        }
+
+        .course-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .course-description {
+            color: var(--gray);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--light-gray);
+        }
+
+        .course-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .rating-stars {
+            color: #fbbf24;
+            font-size: 0.9rem;
+        }
+
+        .rating-value {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .rating-count {
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        .course-details {
+            display: flex;
+            gap: 20px;
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        .course-details span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .course-body {
+            padding: 20px 25px;
+        }
+
+        .course-skills {
+            margin-bottom: 20px;
+        }
+
+        .skills-label {
+            font-weight: 600;
+            color: var(--gray);
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .skills-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .skill-tag {
+            background: #e0e7ff;
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .course-footer {
+            padding: 0 25px 25px;
+        }
+
+        .enroll-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .enroll-btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3);
+        }
+
+        .enroll-btn.secondary {
+            background: var(--secondary);
+        }
+
+        .enroll-btn.secondary:hover {
+            background: #34d399;
+        }
+
+        .enroll-btn.premium {
+            background: var(--accent);
+        }
+
+        .enroll-btn.premium:hover {
+            background: #fbbf24;
+        }
+
+        .continue-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+        }
+
+        /* Progress Cards */
+        .progress-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .progress-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .progress-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .progress-title {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+
+        .progress-percentage {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--light-gray);
+            border-radius: 4px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            transition: width 1s ease;
+        }
+
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .progress-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .btn-continue {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-continue:hover {
+            background: var(--primary-light);
+        }
+
+        .btn-review {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-review:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Stats Cards */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+            transition: color 0.3s ease;
+        }
+
+        .close-modal:hover {
+            color: var(--dark);
+        }
+
+        .modal-body {
+            margin-bottom: 25px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .paths-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .paths-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .progress-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                max-width: 100%;
+            }
+            
+            .categories {
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+            
+            .category-tag {
+                white-space: nowrap;
+            }
+            
+            .top-bar {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .page-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .stats-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .course-details {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .course-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <div class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-brain"></i>
+                <span>ResumeAI</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">WORKSPACE</div>
+            <ul class="nav-links">
+                <li><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="/analyze-resume"><i class="fas fa-chart-line"></i> AI Resume Score</a></li>
+                <li><a href="/learning-paths" class="active"><i class="fas fa-graduation-cap"></i> Learning Paths</a></li>
+                <li><a href="/mock-interviews"><i class="fas fa-comments"></i> Mock Interviews</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">NETWORK</div>
+            <ul class="nav-links">
+                <li><a href="/mentors"><i class="fas fa-users"></i> Mentors</a></li>
+                <li><a href="/job-portal"><i class="fas fa-briefcase"></i> Job Portal</a></li>
+                <li><a href="/communities"><i class="fas fa-globe"></i> Communities</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">DEVELOPMENT</div>
+            <ul class="nav-links">
+                <li><a href="/profile"><i class="fas fa-user"></i> Profile</a></li>
+                <li><a href="/certifications"><i class="fas fa-certificate"></i> Certifications</a></li>
+                <li><a href="/settings"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="top-bar">
+            <div class="page-title">
+                <h1>Learning Paths</h1>
+                <p>Enhance your skills with curated courses and career paths</p>
+            </div>
+            <div class="page-actions">
+                <button class="btn btn-primary" onclick="showCreatePathModal()">
+                    <i class="fas fa-plus"></i> Create Path
+                </button>
+                <button class="btn btn-outline" id="filterToggle">
+                    <i class="fas fa-filter"></i> Filters
+                </button>
+            </div>
+        </div>
+
+        <!-- User Stats -->
+        <div class="stats-cards">
+            <div class="stat-card">
+                <div class="stat-icon" style="color: var(--primary);">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <div class="stat-value">{{ enrolled_courses|length }}</div>
+                <div class="stat-label">Courses Enrolled</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="color: var(--secondary);">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-value">
+                    {% if enrolled_courses %}
+                        {{ ((enrolled_courses|sum(attribute='progress') / enrolled_courses|length)|round|int) }}%
+                    {% else %}
+                        0%
+                    {% endif %}
+                </div>
+                <div class="stat-label">Avg Progress</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="color: var(--accent);">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-value">{{ all_courses|length }}</div>
+                <div class="stat-label">Total Courses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="color: #f59e0b;">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-value">4.8</div>
+                <div class="stat-label">Avg Rating</div>
+            </div>
+        </div>
+
+        <!-- Courses Section -->
+<section class="courses-section">
+
+  <h2 class="section-title">All Courses</h2>
+
+  <div class="course-grid">
+  {% for course in courses %}
+  <div class="course-card-modern">
+
+    <!-- Badge Row -->
+    <div class="card-badges">
+      <span class="badge badge-outline">RECOMMENDED</span>
+      {% if course.price == "FREE" %}
+      <span class="badge badge-success">FREE</span>
+      {% endif %}
+    </div>
+
+    <!-- Title -->
+    <h3 class="course-title">{{ course.title }}</h3>
+
+    <!-- Description -->
+    <p class="course-desc">{{ course.description }}</p>
+
+    <hr>
+
+    <!-- Stats -->
+    <div class="course-stats">
+      <span>⭐ {{ course.rating }} ({{ course.reviews }})</span>
+      <span>⏱ {{ course.duration }}</span>
+      <span>👥 {{ course.enrolled }} enrolled</span>
+    </div>
+
+    <!-- Skills -->
+    <div class="skills">
+      <p class="skills-title">Skills you'll gain:</p>
+      <div class="skill-tags">
+        {% for skill in course.skills %}
+        <span class="skill">{{ skill }}</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Enroll Button -->
+    <a href="{{ url_for('course_details', course_id=course.id) }}"
+       class="btn-enroll">
+       ▶ ENROLL NOW
+    </a>
+
+  </div>
+  {% endfor %}
+</div>
+
+
+</section>
+
+        <!-- Filter Bar (Initially hidden on mobile) -->
+        <div class="filter-bar" id="filterBar" style="display: none;">
+            <div class="search-box">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search courses, skills, or instructors...">
+            </div>
+            <div class="filter-group">
+                <span class="filter-label">Sort by:</span>
+                <select class="filter-select" id="sortSelect">
+                    <option value="popular">Most Popular</option>
+                    <option value="rating">Highest Rated</option>
+                    <option value="newest">Newest</option>
+                    <option value="difficulty">Difficulty</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <span class="filter-label">Level:</span>
+                <select class="filter-select" id="levelSelect">
+                    <option value="all">All Levels</option>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="categories">
+            <div class="category-tag active" data-category="all">
+                <i class="fas fa-code"></i> All Courses
+            </div>
+            <div class="category-tag" data-category="development">
+                <i class="fas fa-laptop-code"></i> Web Development
+            </div>
+            <div class="category-tag" data-category="data">
+                <i class="fas fa-database"></i> Data Science
+            </div>
+            <div class="category-tag" data-category="mobile">
+                <i class="fas fa-mobile-alt"></i> Mobile Dev
+            </div>
+            <div class="category-tag" data-category="devops">
+                <i class="fas fa-cloud"></i> Cloud & DevOps
+            </div>
+            <div class="category-tag" data-category="cs">
+                <i class="fas fa-chart-bar"></i> Data Structures
+            </div>
+        </div>
+
+        <!-- Your Progress Section -->
+        {% if enrolled_courses %}
+        <section class="learning-paths">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Your Learning Progress</h2>
+                    <p class="section-subtitle">Continue where you left off</p>
+                </div>
+                <a href="#" class="section-actions">View all <i class="fas fa-arrow-right"></i></a>
+            </div>
+
+            <div class="progress-cards">
+                {% for course in enrolled_courses %}
+                <div class="progress-card">
+                    <div class="progress-header">
+                        <h3 class="progress-title">{{ course.title }}</h3>
+                        <span class="progress-percentage">{{ course.progress }}%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ course.progress }}%"></div>
+                    </div>
+                    <div class="progress-stats">
+                        <span>{{ course.modules_completed }}/{{ course.total_modules }} modules</span>
+                        <span>Last: {{ course.last_accessed }}</span>
+                    </div>
+                    <div class="progress-actions">
+                        <button class="btn-small btn-continue" onclick="continueCourse({{ course.id }})">
+                            <i class="fas fa-play"></i> Continue
+                        </button>
+                        <button class="btn-small btn-review" onclick="viewCourseDetails({{ course.id }})">
+                            <i class="fas fa-info-circle"></i> Details
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Featured Learning Paths -->
+        <section class="learning-paths">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Featured Learning Paths</h2>
+                    <p class="section-subtitle">Curated career paths to help you achieve your goals</p>
+                </div>
+                <a href="#" class="section-actions">View all <i class="fas fa-arrow-right"></i></a>
+            </div>
+
+            <div class="paths-grid" id="coursesGrid">
+                {% for course in all_courses %}
+                <div class="course-card {% if course.progress == 0 %}featured{% endif %}" 
+                     data-category="{{ course.category|lower }}" 
+                     data-difficulty="{{ course.difficulty|lower }}"
+                     data-rating="{{ course.rating }}">
+                    <div class="course-header">
+                        <div class="course-category">{{ course.category }}</div>
+                        <div class="course-badge {% if course.price == 0 %}free{% else %}premium{% endif %}">
+                            {% if course.price == 0 %}FREE{% else %}PREMIUM{% endif %}
+                        </div>
+                        <h3 class="course-title">{{ course.title }}</h3>
+                        <p class="course-description">{{ course.description }}</p>
+                        <div class="course-meta">
+                            <div class="course-rating">
+                                <div class="rating-stars">
+                                    <!-- FIXED: Proper Jinja2 loop for stars -->
+                                    {% set rating_int = course.rating|int %}
+                                    {% set has_half = course.rating > rating_int %}
+                                    
+                                    {% for i in range(5) %}
+                                        {% if i < rating_int %}
+                                            <i class="fas fa-star"></i>
+                                        {% elif has_half and i == rating_int %}
+                                            <i class="fas fa-star-half-alt"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <span class="rating-value">{{ course.rating }}</span>
+                                <span class="rating-count">({{ "{:,}".format(course.reviews) }})</span>
+                            </div>
+                            <div class="course-details">
+                                <span><i class="far fa-clock"></i> {{ course.duration }}</span>
+                                <span><i class="fas fa-users"></i> {{ "{:,}".format(course.enrolled) }} enrolled</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="course-body">
+                        <div class="course-skills">
+                            <div class="skills-label">Skills you'll gain:</div>
+                            <div class="skills-tags">
+                                {% for skill in course.skills[:4] %}
+                                <span class="skill-tag">{{ skill }}</span>
+                                {% endfor %}
+                                {% if course.skills|length > 4 %}
+                                <span class="skill-tag">+{{ course.skills|length - 4 }} more</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="course-footer">
+                        {% if course.progress > 0 %}
+                            <button class="enroll-btn continue-btn" onclick="continueCourse({{ course.id }})">
+                                <i class="fas fa-play-circle"></i> CONTINUE LEARNING ({{ course.progress }}%)
+                            </button>
+                        {% elif course.price == 0 %}
+                            <button class="enroll-btn secondary" onclick="enrollCourse({{ course.id }})">
+                                <i class="fas fa-play-circle"></i> ENROLL NOW
+                            </button>
+                        {% else %}
+                            <button class="enroll-btn premium" onclick="enrollCourse({{ course.id }}, true)">
+                                <i class="fas fa-lock"></i> ENROLL NOW (${{ course.price }})
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Skill Recommendations -->
+        <section class="learning-paths">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Recommended For You</h2>
+                    <p class="section-subtitle">Based on your resume analysis and interests</p>
+                </div>
+            </div>
+            <div class="paths-grid">
+                <div class="course-card">
+                    <div class="course-header">
+                        <div class="course-category">RECOMMENDED</div>
+                        <div class="course-badge free">FREE</div>
+                        <h3 class="course-title">Python for Data Analysis</h3>
+                        <p class="course-description">Master data manipulation with pandas, numpy, and visualization libraries for data-driven decisions.</p>
+                        <div class="course-meta">
+                            <div class="course-rating">
+                                <div class="rating-stars">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                                </div>
+                                <span class="rating-value">4.6</span>
+                                <span class="rating-count">(1,897)</span>
+                            </div>
+                            <div class="course-details">
+                                <span><i class="far fa-clock"></i> 5 weeks</span>
+                                <span><i class="fas fa-users"></i> 3,456 enrolled</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="course-body">
+                        <div class="course-skills">
+                            <div class="skills-label">Skills you'll gain:</div>
+                            <div class="skills-tags">
+                                <span class="skill-tag">Pandas</span>
+                                <span class="skill-tag">NumPy</span>
+                                <span class="skill-tag">Matplotlib</span>
+                                <span class="skill-tag">Seaborn</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="course-footer">
+                        <button class="enroll-btn secondary" onclick="enrollCourse(0)">
+                            <i class="fas fa-play-circle"></i> ENROLL NOW
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Enrollment Modal -->
+    <div id="enrollmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Enroll in Course</h3>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" id="confirmEnroll">Confirm Enrollment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Path Modal -->
+    <div id="createPathModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Create Learning Path</h3>
+                <button class="close-modal" onclick="closeCreateModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Path Name</label>
+                    <input type="text" id="pathName" placeholder="e.g., Full Stack Developer Path" style="width: 100%; padding: 10px; border: 1px solid var(--light-gray); border-radius: 8px;">
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Description</label>
+                    <textarea id="pathDescription" placeholder="Describe your learning goals..." style="width: 100%; padding: 10px; border: 1px solid var(--light-gray); border-radius: 8px; height: 100px;"></textarea>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Select Courses</label>
+                    <div style="max-height: 200px; overflow-y: auto; border: 1px solid var(--light-gray); border-radius: 8px; padding: 10px;">
+                        {% for course in all_courses %}
+                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                            <input type="checkbox" id="course{{ course.id }}" value="{{ course.id }}" style="margin-right: 10px;">
+                            <label for="course{{ course.id }}">{{ course.title }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeCreateModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="createLearningPath()">Create Path</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Format number with commas
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // Apply number formatting to all enrollment numbers
+        document.addEventListener('DOMContentLoaded', function() {
+            // Format enrollment numbers in JavaScript
+            document.querySelectorAll('.course-details span:last-child').forEach(el => {
+                const text = el.textContent;
+                // Extract number and format it
+                const match = text.match(/\d[\d,]*/);
+                if (match) {
+                    const numStr = match[0].replace(/,/g, '');
+                    const num = parseInt(numStr);
+                    if (!isNaN(num)) {
+                        el.textContent = text.replace(match[0], formatNumber(num));
+                    }
+                }
+            });
+
+            // Format review numbers
+            document.querySelectorAll('.rating-count').forEach(el => {
+                const text = el.textContent;
+                const match = text.match(/\d[\d,]*/);
+                if (match) {
+                    const numStr = match[0].replace(/,/g, '');
+                    const num = parseInt(numStr);
+                    if (!isNaN(num)) {
+                        el.textContent = text.replace(match[0], formatNumber(num));
+                    }
+                }
+            });
+        });
+
+        // Mobile menu toggle
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+
+        // Filter toggle
+        document.getElementById('filterToggle').addEventListener('click', function() {
+            const filterBar = document.getElementById('filterBar');
+            filterBar.style.display = filterBar.style.display === 'none' || filterBar.style.display === '' ? 'flex' : 'none';
+        });
+
+        // Category filtering
+        document.querySelectorAll('.category-tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                // Update active category
+                document.querySelectorAll('.category-tag').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                filterCourses();
+            });
+        });
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', filterCourses);
+        document.getElementById('sortSelect').addEventListener('change', filterCourses);
+        document.getElementById('levelSelect').addEventListener('change', filterCourses);
+
+        function filterCourses() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const sortBy = document.getElementById('sortSelect').value;
+            const level = document.getElementById('levelSelect').value;
+            const activeCategory = document.querySelector('.category-tag.active').dataset.category;
+            
+            const courses = document.querySelectorAll('#coursesGrid .course-card');
+            
+            let visibleCourses = 0;
+            
+            courses.forEach(course => {
+                const title = course.querySelector('.course-title').textContent.toLowerCase();
+                const description = course.querySelector('.course-description').textContent.toLowerCase();
+                const category = course.dataset.category;
+                const difficulty = course.dataset.difficulty;
+                
+                // Check if course matches filters
+                let show = true;
+                
+                // Search term
+                if (searchTerm && !title.includes(searchTerm) && !description.includes(searchTerm)) {
+                    show = false;
+                }
+                
+                // Category filter
+                if (activeCategory !== 'all' && !category.includes(activeCategory)) {
+                    show = false;
+                }
+                
+                // Level filter
+                if (level !== 'all' && difficulty !== level) {
+                    show = false;
+                }
+                
+                course.style.display = show ? 'block' : 'none';
+                if (show) visibleCourses++;
+            });
+            
+            // Show message if no courses found
+            if (visibleCourses === 0) {
+                // You could add a "no results" message here
+                console.log('No courses match your filters');
+            }
+            
+            // Sort courses (simple client-side sorting)
+            const container = document.getElementById('coursesGrid');
+            const courseArray = Array.from(courses).filter(c => c.style.display !== 'none');
+            
+            courseArray.sort((a, b) => {
+                if (sortBy === 'rating') {
+                    return parseFloat(b.dataset.rating) - parseFloat(a.dataset.rating);
+                } else if (sortBy === 'popular') {
+                    const bEnrolledText = b.querySelector('.course-details span:last-child').textContent;
+                    const aEnrolledText = a.querySelector('.course-details span:last-child').textContent;
+                    const bEnrolled = parseInt(bEnrolledText.replace(/[^0-9]/g, ''));
+                    const aEnrolled = parseInt(aEnrolledText.replace(/[^0-9]/g, ''));
+                    return bEnrolled - aEnrolled;
+                }
+                return 0;
+            });
+            
+            // Re-append sorted courses
+            courseArray.forEach(course => container.appendChild(course));
+        }
+
+        // Course enrollment
+        function enrollCourse(courseId, isPremium = false) {
+            const modal = document.getElementById('enrollmentModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            const confirmBtn = document.getElementById('confirmEnroll');
+            
+            if (isPremium) {
+                modalTitle.textContent = 'Enroll in Premium Course';
+                modalBody.innerHTML = `
+                    <p>This is a premium course with a one-time payment. You'll get:</p>
+                    <ul style="margin: 15px 0; padding-left: 20px;">
+                        <li>Full course access</li>
+                        <li>Certificate of completion</li>
+                        <li>Project files and resources</li>
+                        <li>Priority support</li>
+                    </ul>
+                    <p>Proceed with payment?</p>
+                `;
+                confirmBtn.textContent = 'Pay & Enroll';
+            } else {
+                modalTitle.textContent = 'Enroll in Course';
+                modalBody.innerHTML = `
+                    <p>You're about to enroll in this free course. You'll get:</p>
+                    <ul style="margin: 15px 0; padding-left: 20px;">
+                        <li>Full course access</li>
+                        <li>Progress tracking</li>
+                        <li>Community access</li>
+                        <li>Certificate upon completion</li>
+                    </ul>
+                    <p>Start your learning journey?</p>
+                `;
+                confirmBtn.textContent = 'Enroll Now';
+            }
+            
+            // Set up confirm button
+            confirmBtn.onclick = function() {
+                if (isPremium) {
+                    alert('Payment gateway integration would be here. For demo, enrolling directly.');
+                }
+                
+                // Redirect to enrollment endpoint
+                if (courseId > 0) {
+                    window.location.href = `/enroll-course/${courseId}`;
+                } else {
+                    alert('Course enrollment would proceed here.');
+                    closeModal();
+                }
+            };
+            
+            modal.style.display = 'block';
+        }
+
+        // Continue course
+        function continueCourse(courseId) {
+            window.location.href = `/course-content/${courseId}`;
+        }
+
+        // View course details
+        function viewCourseDetails(courseId) {
+            alert(`Course ID: ${courseId}\nViewing details would show more information about the course.`);
+        }
+
+        // Modal functions
+        function closeModal() {
+            document.getElementById('enrollmentModal').style.display = 'none';
+        }
+
+        function showCreatePathModal() {
+            document.getElementById('createPathModal').style.display = 'block';
+        }
+
+        function closeCreateModal() {
+            document.getElementById('createPathModal').style.display = 'none';
+        }
+
+        function createLearningPath() {
+            const pathName = document.getElementById('pathName').value;
+            const description = document.getElementById('pathDescription').value;
+            const selectedCourses = Array.from(document.querySelectorAll('#createPathModal input[type="checkbox"]:checked'))
+                .map(cb => cb.value);
+            
+            if (!pathName.trim()) {
+                alert('Please enter a path name');
+                return;
+            }
+            
+            if (selectedCourses.length === 0) {
+                alert('Please select at least one course');
+                return;
+            }
+            
+            alert(`Created learning path: "${pathName}"\nWith ${selectedCourses.length} courses\n\nDescription: ${description}`);
+            closeCreateModal();
+            
+            // Reset form
+            document.getElementById('pathName').value = '';
+            document.getElementById('pathDescription').value = '';
+            document.querySelectorAll('#createPathModal input[type="checkbox"]').forEach(cb => cb.checked = false);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const enrollmentModal = document.getElementById('enrollmentModal');
+            const createModal = document.getElementById('createPathModal');
+            
+            if (event.target === enrollmentModal) {
+                closeModal();
+            }
+            if (event.target === createModal) {
+                closeCreateModal();
+            }
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Learning Paths loaded successfully!');
+            
+            // Add click handlers for section actions
+            document.querySelectorAll('.section-actions').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    alert('This would show all courses in this section');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

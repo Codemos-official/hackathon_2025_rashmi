@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyze Resume</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>AI Resume Analyzer</h2>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label>Job Title (Optional)</label>
+                <input type="text" name="job_title" class="form-control" placeholder="e.g., Software Engineer">
+            </div>
+            
+            <div class="mb-3">
+                <label>Upload Resume (PDF, DOCX, TXT)</label>
+                <input type="file" name="resume_file" class="form-control" accept=".pdf,.docx,.txt">
+            </div>
+            
+            <div class="mb-3">
+                <label>OR Paste Resume Text</label>
+                <textarea name="resume_text" class="form-control" rows="10" 
+                          placeholder="Paste your resume here..."></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Analyze Resume</button>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+        </form>
+    </div>
+</body>
+</html>

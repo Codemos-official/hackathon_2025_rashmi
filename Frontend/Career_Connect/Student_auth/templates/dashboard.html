@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <!-- ☰ MENU BUTTON -->
+    <div class="menu-btn" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- BACKGROUND ANIMATION -->
+    <canvas id="neuron-bg"></canvas>
+
+    <!-- OVERLAY -->
+    <div class="overlay" onclick="closeSidebar()"></div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <!-- PROFILE HEADER -->
+        <div class="sidebar-profile" onclick="toggleProfileDetails()">
+            <div class="avatar">
+                {% if profile_pic %}
+                    <img src="{{ profile_pic }}" alt="Profile">
+                {% else %}
+                    <i class="fas fa-user"></i>
+                {% endif %}
+            </div>
+            <div class="profile-info">
+                <p class="profile-name">{{ name }}</p>
+                <p class="profile-email">{{ email }}</p>
+                <span class="profile-toggle">
+                    <i class="fas fa-chevron-down" id="profileToggleIcon"></i>
+
+                </span>
+            </div>
+        </div>
+
+        <!-- PROFILE DETAILS -->
+        <!-- PROFILE DETAILS (Hidden by default - Shows signup details) -->
+<div class="profile-details" id="profileDetails">
+    <h4 class="profile-details-title">Your Profile Details</h4>
+    
+    <div class="detail-item">
+        <span class="detail-label"><i class="fas fa-user"></i> Full Name</span>
+        <span class="detail-value" id="profileName">{{ name }}</span>
+    </div>
+    
+    <div class="detail-item">
+        <span class="detail-label"><i class="fas fa-envelope"></i> Email</span>
+        <span class="detail-value" id="profileEmail">{{ email }}</span>
+    </div>
+    
+    <div class="detail-item">
+        <span class="detail-label"><i class="fas fa-graduation-cap"></i> Education</span>
+        <span class="detail-value" id="profileEducation">{{ education }}</span>
+    </div>
+    
+    <div class="detail-item">
+        <span class="detail-label"><i class="fas fa-user-tag"></i> Role</span>
+        <span class="detail-value" id="profileRole">{{ role|capitalize }}</span>
+    </div>
+    
+    {% if skills %}
+    <div class="detail-item">
+        <span class="detail-label"><i class="fas fa-code"></i> Skills</span>
+        <span class="detail-value" id="profileSkills">{{ skills }}</span>
+    </div>
+    {% else %}
+    <div class="detail-item">
+        <span class="detail-label"><i class="fas fa-code"></i> Skills</span>
+        <span class="detail-value" id="profileSkills">Not specified</span>
+    </div>
+    {% endif %}
+    
+    {% if experience %}
+    <div class="detail-item">
+        <span class="detail-label"><i class="fas fa-briefcase"></i> Experience</span>
+        <span class="detail-value" id="profileExperience">{{ experience }}</span>
+    </div>
+    {% else %}
+    <div class="detail-item">
+        <span class="detail-label"><i class="fas fa-briefcase"></i> Experience</span>
+        <span class="detail-value" id="profileExperience">Not specified</span>
+    </div>
+    {% endif %}
+    
+    {% if location %}
+    <div class="detail-item">
+        <span class="detail-label"><i class="fas fa-map-marker-alt"></i> Location</span>
+        <span class="detail-value" id="profileLocation">{{ location }}</span>
+    </div>
+    {% else %}
+    <div class="detail-item">
+        <span class="detail-label"><i class="fas fa-map-marker-alt"></i> Location</span>
+        <span class="detail-value" id="profileLocation">Not specified</span>
+    </div>
+    {% endif %}
+    
+    <div class="profile-actions">
+        <a href="/profile/edit" class="edit-profile-btn">
+            <i class="fas fa-edit"></i> Edit Profile
+        </a>
+        <button class="close-profile-btn" onclick="toggleProfileDetails()">
+            <i class="fas fa-times"></i> Close
+        </button>
+    </div>
+</div>
+
+        <!-- Navigation -->
+        <div class="sidebar-nav">
+            <a href="/dashboard" class="nav-item active">
+                <i class="fas fa-home"></i> <span>Dashboard</span>
+            </a>
+            <a href="/resume-score" class="nav-item">
+                <i class="fas fa-file-alt"></i> <span>AI Resume Score</span>
+            </a>
+            <a href="/learning-paths" class="nav-item">
+                <i class="fas fa-book-open"></i> <span>Learning Paths</span>
+            </a>
+            <a href="/mock-interviews" class="nav-item">
+                <i class="fas fa-microphone-alt"></i> <span>Mock Interviews</span>
+            </a>
+            <a href="/certifications" class="nav-item">
+                <i class="fas fa-certificate"></i> <span>Certification Courses</span>
+            </a>
+
+            <h4 class="sidebar-title">
+                <i class="fas fa-network-wired"></i> NETWORK
+            </h4>
+            
+            <a href="/mentors" class="nav-item">
+                <i class="fas fa-users"></i> <span>Mentors</span>
+            </a>
+            <a href="/jobs" class="nav-item">
+                <i class="fas fa-briefcase"></i> <span>Job Portal</span>
+            </a>
+            <a href="/communities" class="nav-item">
+                <i class="fas fa-globe"></i> <span>Communities</span>
+            </a>
+        </div>
+
+        <!-- LOGOUT -->
+        <div class="sidebar-footer">
+            <a href="/logout" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- DASHBOARD CONTENT -->
+    <div class="dashboard">
+        <div class="container">
+            <div class="card progress-card">
+                <h2><i class="fas fa-hand-wave"></i> Welcome, {{ name }} 👋</h2>
+                <p class="subtitle">Your career preparation status</p>
+
+                <div class="progress-wrapper">
+                    <span class="progress-text">{{ progress }}% Completed</span>
+                    <div class="progress-bar large">
+                        <div class="progress" style="width: {{ progress }}%"></div>
+                    </div>
+                </div>
+
+                {% if progress < 100 %}
+                <div class="suggestion-box">
+                    <h3><i class="fas fa-bullseye"></i> Suggested Next Steps</h3>
+                    <ul>
+                        <li><i class="fas fa-book"></i> Improve Core Java concepts</li>
+                        <li><i class="fas fa-puzzle-piece"></i> Practice basic DSA</li>
+                        <li><i class="fas fa-tools"></i> Build one mini project</li>
+                    </ul>
+                </div>
+                {% else %}
+                <div class="suggestion-box">
+                    <h3><i class="fas fa-rocket"></i> You're Ready for the Next Level</h3>
+                    <ul>
+                        <li><i class="fas fa-fire"></i> Start advanced projects</li>
+                        <li><i class="fas fa-bullseye"></i> Prepare for interviews</li>
+                        <li><i class="fas fa-briefcase"></i> Apply for internships / jobs</li>
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="grid-container">
+                <div class="card">
+                    <h3><i class="fas fa-map-signs"></i> Career Roadmap</h3>
+                    <p>Based on your interest</p>
+                    <div class="roadmap">
+                        <div class="step active">1. Core Java</div>
+                        <div class="step">2. OOP</div>
+                        <div class="step">3. SQL & JDBC</div>
+                        <div class="step">4. Spring Boot</div>
+                        <div class="step">5. Frontend</div>
+                    </div>
+                    <a class="btn" href="#" style="margin-top: 15px;">
+                        <i class="fas fa-eye"></i> View Full Roadmap
+                    </a>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                    <p style="color: #8892b0; margin-bottom: 20px;">Get started quickly</p>
+                    <div class="actions">
+                        <a class="btn" href="/profile">
+                            <i class="fas fa-user-edit"></i> Complete Profile
+                        </a>
+                        <a class="btn" href="#">
+                            <i class="fas fa-graduation-cap"></i> Recommended Courses
+                        </a>
+                        <a class="btn" href="#">
+                            <i class="fas fa-microphone-alt"></i> Mock Interview
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Completion Alert -->
+            {% if progress < 70 %}
+            <div class="card alert-card">
+                <div class="alert-content">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <div>
+                        <h4>Complete Your Profile</h4>
+                        <p>Add more details to your profile to get personalized recommendations.</p>
+                    </div>
+                    <a href="/profile" class="btn-small">Complete Now</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+/* ===== SIDEBAR FUNCTIONALITY ===== */
+
+/* SIDEBAR TOGGLE */
+let sidebarOpen = false;
+
+function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.querySelector(".overlay");
+    
+    sidebarOpen = !sidebarOpen;
+    
+    if (sidebarOpen) {
+        sidebar.classList.add("open");
+        overlay.classList.add("active");
+        document.body.style.overflow = "hidden";
+    } else {
+        sidebar.classList.remove("open");
+        overlay.classList.remove("active");
+        document.body.style.overflow = "auto";
+    }
+}
+
+function closeSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.querySelector(".overlay");
+    
+    sidebar.classList.remove("open");
+    overlay.classList.remove("active");
+    document.body.style.overflow = "auto";
+    sidebarOpen = false;
+}
+
+/* PROFILE DETAILS TOGGLE */
+let profileDetailsVisible = false;
+
+function toggleProfileDetails() {
+    const profileDetails = document.getElementById('profileDetails');
+    const profileToggleIcon = document.getElementById('profileToggleIcon');
+    const profileToggle = document.querySelector('.profile-toggle');
+    
+    profileDetailsVisible = !profileDetailsVisible;
+    
+    if (profileDetailsVisible) {
+        profileDetails.classList.add('show');
+        profileToggleIcon.classList.remove('fa-chevron-down');
+        profileToggleIcon.classList.add('fa-chevron-up');
+        profileToggle.classList.add('rotated');
+        
+        // Log profile view
+        console.log('Profile details opened - Showing signup data:');
+        console.log('Name:', document.getElementById('profileName').textContent);
+        console.log('Email:', document.getElementById('profileEmail').textContent);
+        console.log('Education:', document.getElementById('profileEducation').textContent);
+        console.log('Role:', document.getElementById('profileRole').textContent);
+        
+    } else {
+        profileDetails.classList.remove('show');
+        profileToggleIcon.classList.remove('fa-chevron-up');
+        profileToggleIcon.classList.add('fa-chevron-down');
+        profileToggle.classList.remove('rotated');
+    }
+}
+
+// Close sidebar when clicking outside on mobile
+document.addEventListener('click', function(event) {
+    const sidebar = document.getElementById('sidebar');
+    const menuBtn = document.querySelector('.menu-btn');
+    const profileDetails = document.getElementById('profileDetails');
+    const profileHeader = document.querySelector('.sidebar-profile');
+    
+    // Close sidebar on mobile
+    if (window.innerWidth < 768 && sidebarOpen) {
+        if (!sidebar.contains(event.target) && !menuBtn.contains(event.target)) {
+            closeSidebar();
+        }
+    }
+    
+    // Close profile details when clicking outside on mobile
+    if (window.innerWidth < 768 && profileDetailsVisible) {
+        if (!profileDetails.contains(event.target) && !profileHeader.contains(event.target)) {
+            toggleProfileDetails();
+        }
+    }
+});
+
+// Close sidebar on escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        if (sidebarOpen) {
+            closeSidebar();
+        }
+        if (profileDetailsVisible) {
+            toggleProfileDetails();
+        }
+    }
+});
+
+/* ===== BACKGROUND ANIMATION ===== */
+const canvas = document.getElementById("neuron-bg");
+const ctx = canvas.getContext("2d");
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resizeCanvas();
+
+let nodes = [];
+const NODE_COUNT = 60;
+
+for (let i = 0; i < NODE_COUNT; i++) {
+    nodes.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.6,
+        vy: (Math.random() - 0.5) * 0.6
+    });
+}
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    nodes.forEach(n => {
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, 2, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(0,198,255,0.8)";
+        ctx.fill();
+    });
+
+    for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+            let dx = nodes[i].x - nodes[j].x;
+            let dy = nodes[i].y - nodes[j].y;
+            let dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 120) {
+                ctx.beginPath();
+                ctx.moveTo(nodes[i].x, nodes[i].y);
+                ctx.lineTo(nodes[j].x, nodes[j].y);
+                ctx.strokeStyle = "rgba(0,198,255,0.15)";
+                ctx.stroke();
+            }
+        }
+    }
+
+    nodes.forEach(n => {
+        n.x += n.vx;
+        n.y += n.vy;
+        if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+        if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+    });
+
+    requestAnimationFrame(draw);
+}
+draw();
+
+window.addEventListener("resize", resizeCanvas);
+
+/* ===== PROFILE DATA MANAGEMENT ===== */
+
+// Load profile data from localStorage if available
+function loadProfileData() {
+    const savedProfile = localStorage.getItem('userProfile');
+    
+    if (savedProfile) {
+        try {
+            const profile = JSON.parse(savedProfile);
+            
+            // Update profile details if elements exist
+            const elements = {
+                'profileName': profile.name,
+                'profileEmail': profile.email,
+                'profileEducation': profile.education,
+                'profileRole': profile.role,
+                'profileSkills': profile.skills,
+                'profileExperience': profile.experience,
+                'profileLocation': profile.location
+            };
+            
+            Object.entries(elements).forEach(([id, value]) => {
+                const element = document.getElementById(id);
+                if (element && value && value !== 'Not specified') {
+                    element.textContent = value;
+                }
+            });
+            
+        } catch (e) {
+            console.error('Error loading profile data:', e);
+        }
+    }
+}
+
+// Save profile data to localStorage
+function saveProfileData() {
+    const profile = {
+        name: document.getElementById('profileName').textContent,
+        email: document.getElementById('profileEmail').textContent,
+        education: document.getElementById('profileEducation').textContent,
+        role: document.getElementById('profileRole').textContent,
+        skills: document.getElementById('profileSkills').textContent,
+        experience: document.getElementById('profileExperience').textContent,
+        location: document.getElementById('profileLocation').textContent
+    };
+    
+    localStorage.setItem('userProfile', JSON.stringify(profile));
+}
+
+// Update profile data (call this when profile is edited)
+function updateProfileData(newData) {
+    const elements = {
+        'profileName': newData.name,
+        'profileEmail': newData.email,
+        'profileEducation': newData.education,
+        'profileRole': newData.role,
+        'profileSkills': newData.skills,
+        'profileExperience': newData.experience,
+        'profileLocation': newData.location
+    };
+    
+    Object.entries(elements).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element && value !== undefined) {
+            element.textContent = value || 'Not specified';
+        }
+    });
+    
+    saveProfileData();
+    showNotification('Profile updated successfully!', 'success');
+}
+
+// Edit profile button handler
+document.addEventListener('DOMContentLoaded', function() {
+    loadProfileData();
+    
+    // Edit profile button simulation
+    const editBtn = document.querySelector('.edit-profile-btn');
+    if (editBtn) {
+        editBtn.addEventListener('click', function(e) {
+            if (this.getAttribute('href') === '/profile/edit') {
+                return; // Allow navigation if href is set
+            }
+            
+            e.preventDefault();
+            
+            // Demo: Simulate editing skills
+            const currentSkills = document.getElementById('profileSkills').textContent;
+            const newSkills = prompt('Update your skills (comma separated):', currentSkills);
+            
+            if (newSkills !== null) {
+                updateProfileData({
+                    skills: newSkills
+                });
+            }
+        });
+    }
+    
+    // Check screen size and adjust sidebar
+    checkScreenSize();
+});
+
+function checkScreenSize() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.querySelector('.overlay');
+    
+    if (window.innerWidth >= 768) {
+        sidebar.classList.add('open');
+        overlay.classList.remove('active');
+        sidebarOpen = true;
+        document.body.style.overflow = "auto";
+    } else {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+        sidebarOpen = false;
+        document.body.style.overflow = "auto";
+    }
+}
+
+// Listen for window resize
+window.addEventListener('resize', checkScreenSize);
+
+// Notification function
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+        <span>${message}</span>
+        <button onclick="this.parentElement.remove()">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, 3000);
+}
+
+// Add notification styles
+const notificationStyles = `
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(17, 34, 64, 0.95);
+        border: 1px solid rgba(0, 198, 255, 0.3);
+        border-radius: 10px;
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #ccd6f6;
+        z-index: 9999;
+        animation: slideInRight 0.3s ease-out;
+        max-width: 350px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+    }
+    
+    .notification-success {
+        border-color: rgba(46, 204, 113, 0.3);
+    }
+    
+    .notification-success i {
+        color: #2ecc71;
+    }
+    
+    .notification i:first-child {
+        font-size: 1.2rem;
+    }
+    
+    .notification span {
+        flex: 1;
+        font-size: 0.95rem;
+    }
+    
+    .notification button {
+        background: none;
+        border: none;
+        color: #8892b0;
+        cursor: pointer;
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .notification button:hover {
+        color: #ccd6f6;
+    }
+    
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+`;
+
+// Add styles to document
+const styleSheet = document.createElement('style');
+styleSheet.textContent = notificationStyles;
+document.head.appendChild(styleSheet);
+</script>
+</body>
+</html>

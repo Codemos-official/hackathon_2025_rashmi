@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certifications - AI Resume Analyzer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --gray: #6b7280;
+            --light-gray: #e5e7eb;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --sidebar-width: 280px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 30px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 5px 0 20px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 0 25px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: #fbbf24;
+        }
+
+        .nav-section {
+            margin-bottom: 30px;
+        }
+
+        .nav-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 25px;
+            margin-bottom: 15px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+        }
+
+        .nav-links {
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-bottom: 5px;
+        }
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 25px;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left-color: #fbbf24;
+        }
+
+        .nav-links a.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border-left-color: #fbbf24;
+        }
+
+        .nav-links i {
+            width: 20px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title h1 {
+            font-size: 2.2rem;
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .page-title p {
+            color: var(--gray);
+            margin-top: 8px;
+            font-size: 1.1rem;
+        }
+
+        .page-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3);
+        }
+
+        /* Certification Cards */
+        .cert-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .cert-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            border: 1px solid var(--light-gray);
+        }
+
+        .cert-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .cert-header {
+            padding: 25px;
+            border-bottom: 1px solid var(--light-gray);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .cert-badge {
+            display: inline-block;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .cert-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .cert-provider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .cert-body {
+            padding: 20px 25px;
+        }
+
+        .cert-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .cert-skills {
+            margin-bottom: 20px;
+        }
+
+        .skills-label {
+            font-weight: 600;
+            color: var(--gray);
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .skills-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .skill-tag {
+            background: #e0e7ff;
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--light-gray);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            transition: width 1s ease;
+        }
+
+        .cert-footer {
+            padding: 0 25px 25px;
+        }
+
+        .enroll-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .enroll-btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3);
+        }
+
+        .enroll-btn.continue {
+            background: var(--secondary);
+        }
+
+        .enroll-btn.continue:hover {
+            background: #34d399;
+        }
+
+        /* Popularity Indicator */
+        .popularity {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+
+        .popularity-bar {
+            flex: 1;
+            height: 6px;
+            background: var(--light-gray);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .popularity-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #fbbf24);
+        }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .section-subtitle {
+            color: var(--gray);
+            margin-top: 5px;
+        }
+
+        /* Stats */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .cert-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cert-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-brain"></i>
+                <span>ResumeAI</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">WORKSPACE</div>
+            <ul class="nav-links">
+                <li><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="/analyze-resume"><i class="fas fa-chart-line"></i> AI Resume Score</a></li>
+                <li><a href="/learning-paths"><i class="fas fa-graduation-cap"></i> Learning Paths</a></li>
+                <li><a href="/mock-interviews"><i class="fas fa-comments"></i> Mock Interviews</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">NETWORK</div>
+            <ul class="nav-links">
+                <li><a href="/mentors"><i class="fas fa-users"></i> Mentors</a></li>
+                <li><a href="/job-portal"><i class="fas fa-briefcase"></i> Job Portal</a></li>
+                <li><a href="/communities"><i class="fas fa-globe"></i> Communities</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">DEVELOPMENT</div>
+            <ul class="nav-links">
+                <li><a href="/profile"><i class="fas fa-user"></i> Profile</a></li>
+                <li><a href="/certifications" class="active"><i class="fas fa-certificate"></i> Certifications</a></li>
+                <li><a href="/settings"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="top-bar">
+            <div class="page-title">
+                <h1>Professional Certifications</h1>
+                <p>Boost your career with industry-recognized certifications</p>
+            </div>
+            <div class="page-actions">
+                <button class="btn btn-primary">
+                    <i class="fas fa-search"></i> Find Certifications
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-cards">
+            <div class="stat-card">
+                <i class="fas fa-certificate" style="color: var(--primary); font-size: 1.5rem;"></i>
+                <div class="stat-value">{{ enrolled_certifications|length }}</div>
+                <div class="stat-label">Certifications Enrolled</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-check-circle" style="color: var(--secondary); font-size: 1.5rem;"></i>
+                <div class="stat-value">
+                    {% if enrolled_certifications %}
+                        {{ (enrolled_certifications|sum(attribute='progress') / enrolled_certifications|length)|round|int }}%
+                    {% else %}
+                        0%
+                    {% endif %}
+                </div>
+                <div class="stat-label">Average Progress</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-calendar" style="color: var(--accent); font-size: 1.5rem;"></i>
+                <div class="stat-value">
+                    {% set upcoming = enrolled_certifications|selectattr('exam_date', '!=', None)|list %}
+                    {{ upcoming|length }}
+                </div>
+                <div class="stat-label">Upcoming Exams</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-trophy" style="color: #fbbf24; font-size: 1.5rem;"></i>
+                <div class="stat-value">85%</div>
+                <div class="stat-label">Success Rate</div>
+            </div>
+        </div>
+
+        <!-- Enrolled Certifications -->
+        <section class="cert-section">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Your Certifications</h2>
+                    <p class="section-subtitle">Continue your learning journey</p>
+                </div>
+            </div>
+
+            <div class="cert-grid">
+                {% for cert in enrolled_certifications %}
+                <div class="cert-card">
+                    <div class="cert-header">
+                        <span class="cert-badge">{{ cert.level }}</span>
+                        <h3 class="cert-title">{{ cert.title }}</h3>
+                        <div class="cert-provider">
+                            <i class="fas fa-building"></i>
+                            <span>{{ cert.provider }}</span>
+                        </div>
+                    </div>
+                    <div class="cert-body">
+                        <div class="cert-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Duration</span>
+                                <span class="detail-value">{{ cert.duration }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Validity</span>
+                                <span class="detail-value">{{ cert.validity }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Exam Fee</span>
+                                <span class="detail-value">${{ cert.exam_fee }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Pass Rate</span>
+                                <span class="detail-value">{{ cert.pass_rate }}</span>
+                            </div>
+                        </div>
+
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>Progress</span>
+                                <span>{{ cert.progress }}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: {{ cert.progress }}%"></div>
+                            </div>
+                        </div>
+
+                        {% if cert.exam_date %}
+                        <div class="exam-date">
+                            <span class="detail-label">Exam Date</span>
+                            <span class="detail-value" style="color: var(--accent);">{{ cert.exam_date }}</span>
+                        </div>
+                        {% endif %}
+
+                        <div class="cert-skills">
+                            <div class="skills-label">Skills Covered:</div>
+                            <div class="skills-tags">
+                                {% for skill in cert.skills %}
+                                <span class="skill-tag">{{ skill }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cert-footer">
+                        <button class="enroll-btn continue" onclick="continueCertification({{ cert.id }})">
+                            <i class="fas fa-play-circle"></i> Continue Learning
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Available Certifications -->
+        <section class="cert-section">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Available Certifications</h2>
+                    <p class="section-subtitle">Expand your skills with new certifications</p>
+                </div>
+            </div>
+
+            <div class="cert-grid">
+                {% for cert in available_certifications %}
+                <div class="cert-card">
+                    <div class="cert-header">
+                        <span class="cert-badge">{{ cert.level }}</span>
+                        <h3 class="cert-title">{{ cert.title }}</h3>
+                        <div class="cert-provider">
+                            <i class="fas fa-building"></i>
+                            <span>{{ cert.provider }}</span>
+                        </div>
+                    </div>
+                    <div class="cert-body">
+                        <div class="cert-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Duration</span>
+                                <span class="detail-value">{{ cert.duration }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Validity</span>
+                                <span class="detail-value">{{ cert.validity }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Exam Fee</span>
+                                <span class="detail-value">${{ cert.exam_fee }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Pass Rate</span>
+                                <span class="detail-value">{{ cert.pass_rate }}</span>
+                            </div>
+                        </div>
+
+                        <div class="popularity">
+                            <span>Popularity:</span>
+                            <div class="popularity-bar">
+                                <div class="popularity-fill" style="width: {{ cert.popularity }}%"></div>
+                            </div>
+                            <span>{{ cert.popularity }}%</span>
+                        </div>
+
+                        <div class="cert-skills">
+                            <div class="skills-label">Skills Covered:</div>
+                            <div class="skills-tags">
+                                {% for skill in cert.skills %}
+                                <span class="skill-tag">{{ skill }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cert-footer">
+                        <button class="enroll-btn" onclick="enrollCertification({{ cert.id }})">
+                            <i class="fas fa-plus-circle"></i> Enroll Now
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <script>
+        function enrollCertification(certId) {
+            if (confirm('Enroll in this certification program? You can start learning immediately.')) {
+                window.location.href = `/enroll-certification/${certId}`;
+            }
+        }
+
+        function continueCertification(certId) {
+            window.location.href = `/certification-content/${certId}`;
+        }
+
+        // Add certification tips
+        document.addEventListener('DOMContentLoaded', function() {
+            const tips = [
+                "Schedule regular study sessions for certification preparation",
+                "Take practice exams to identify weak areas",
+                "Join study groups for collaborative learning",
+                "Set exam dates to create accountability",
+                "Review official study guides and documentation"
+            ];
+
+            // Show a random tip
+            const randomTip = tips[Math.floor(Math.random() * tips.length)];
+            console.log(`📚 Certification Tip: ${randomTip}`);
+        });
+    </script>
+</body>
+</html>
