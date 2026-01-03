@@ -1,0 +1,971 @@
+/* ===== PERFECTLY CENTERED AUTH PAGES ===== */
+
+.auth-bg {
+    background: #0a192f;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow: auto; /* Allow scrolling if content is tall */
+}
+
+/* Make sure canvas and overlay cover full screen */
+#neuron-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 25, 47, 0.85);
+    z-index: -1;
+}
+
+/* Center container - FIXED */
+.auth-container {
+    width: 100%;
+    max-width: 450px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh; /* Full viewport height */
+    padding: 20px;
+}
+
+.auth-card {
+    background: rgba(17, 34, 64, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 40px 35px;
+    border: 1px solid rgba(0, 198, 255, 0.2);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    animation: slideUp 0.6s ease-out;
+    margin: auto; /* Center horizontally */
+}
+
+/* Ensure vertical centering on all screens */
+@media (max-height: 700px) {
+    .auth-container {
+        align-items: flex-start;
+        padding-top: 40px;
+        padding-bottom: 40px;
+    }
+}
+
+/* Signup page specific - for taller forms */
+.auth-card.signup {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.auth-card.signup::-webkit-scrollbar {
+    width: 6px;
+}
+
+.auth-card.signup::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+.auth-card.signup::-webkit-scrollbar-thumb {
+    background: rgba(0, 198, 255, 0.3);
+    border-radius: 3px;
+}
+
+/* Logo and Header */
+.auth-header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 25px;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.logo-icon {
+    font-size: 2.2rem;
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.logo-text {
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 1px;
+}
+
+.auth-header h1 {
+    color: #fff;
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.auth-subtitle {
+    color: #8892b0;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Form Styles - Fixed alignment */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.form-group label {
+    color: #ccd6f6;
+    font-weight: 500;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    box-sizing: border-box; /* Include padding in width */
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #00c6ff;
+    background: rgba(0, 198, 255, 0.05);
+    box-shadow: 0 0 0 3px rgba(0, 198, 255, 0.1);
+}
+
+.form-group input::placeholder,
+.form-group select::placeholder {
+    color: #8892b0;
+    opacity: 0.7;
+}
+
+/* Signup page specific form elements */
+.form-hint {
+    color: #8892b0;
+    font-size: 0.85rem;
+    margin-top: 4px;
+    display: block;
+}
+
+.terms-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.terms-group input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    accent-color: #00c6ff;
+    flex-shrink: 0;
+}
+
+.terms-group label {
+    color: #ccd6f6;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.terms-link {
+    color: #00c6ff;
+    text-decoration: none;
+}
+
+.terms-link:hover {
+    text-decoration: underline;
+}
+
+/* Form Options */
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 5px;
+    width: 100%;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.remember-me input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #00c6ff;
+}
+
+.remember-me label {
+    color: #ccd6f6;
+    font-size: 0.9rem;
+    cursor: pointer;
+    user-select: none;
+    margin: 0;
+}
+
+.forgot-password {
+    color: #00c6ff;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.forgot-password:hover {
+    color: #0072ff;
+    text-decoration: underline;
+}
+
+/* Buttons */
+.auth-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    font-family: inherit;
+}
+
+.auth-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 198, 255, 0.3);
+}
+
+/* Divider */
+.auth-divider {
+    display: flex;
+    align-items: center;
+    margin: 25px 0;
+    color: #8892b0;
+    font-size: 0.9rem;
+    position: relative;
+    width: 100%;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.15), 
+        transparent);
+}
+
+.auth-divider span {
+    padding: 0 15px;
+    background: rgba(17, 34, 64, 0.95);
+    z-index: 1;
+}
+
+/* Social Login */
+.social-login {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 25px;
+    width: 100%;
+}
+
+.social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    color: #ccd6f6;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    width: 100%;
+}
+
+.social-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(0, 198, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.social-icon {
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.google-btn .social-icon {
+    color: #4285F4;
+}
+
+.linkedin-btn .social-icon {
+    color: #0077B5;
+}
+
+/* Auth Footer */
+.auth-footer {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: #8892b0;
+    font-size: 0.95rem;
+    width: 100%;
+}
+
+.auth-footer p {
+    margin: 0;
+}
+
+.auth-link {
+    color: #00c6ff;
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 5px;
+    transition: color 0.3s ease;
+}
+
+.auth-link:hover {
+    color: #0072ff;
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 15px;
+        min-height: calc(100vh - 30px);
+    }
+    
+    .auth-card {
+        padding: 30px 25px;
+        border-radius: 20px;
+    }
+    
+    .auth-header h1 {
+        font-size: 1.9rem;
+    }
+    
+    .auth-subtitle {
+        font-size: 1rem;
+    }
+    
+    .logo {
+        font-size: 1.6rem;
+        margin-bottom: 20px;
+    }
+    
+    .logo-icon {
+        font-size: 2rem;
+    }
+    
+    .social-login {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .form-group input,
+    .form-group select {
+        padding: 13px 15px;
+    }
+    
+    .auth-btn {
+        padding: 15px;
+    }
+    
+    .auth-divider {
+        margin: 20px 0;
+    }
+}
+
+/* For very small screens */
+@media (max-width: 360px) {
+    .auth-card {
+        padding: 25px 20px;
+    }
+    
+    .auth-header h1 {
+        font-size: 1.7rem;
+    }
+    
+    .form-options {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .forgot-password {
+        align-self: flex-end;
+    }
+}
+
+/* Ensure no horizontal scroll on mobile */
+@media (max-width: 480px) {
+    .auth-bg {
+        padding: 10px;
+        overflow-x: hidden;
+    }
+    
+    .auth-card {
+        width: calc(100vw - 20px);
+        margin: 0;
+    }
+}
+
+/* Fix for iOS devices */
+@supports (-webkit-touch-callout: none) {
+    .auth-container {
+        min-height: -webkit-fill-available;
+    }
+}
+
+/* ===== DASHBOARD ALIGNMENT FIX ===== */
+
+/* Global fixes */
+body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* Overlay fix */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    z-index: 998;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Sidebar fix - Desktop view */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 280px;
+    height: 100vh;
+    background: rgba(17, 34, 64, 0.97);
+    backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(0, 198, 255, 0.1);
+    padding: 20px 0;
+    transition: transform 0.3s ease;
+    z-index: 999;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-shadow: 5px 0 30px rgba(0, 0, 0, 0.3);
+    transform: translateX(-100%);
+}
+
+.sidebar.open {
+    transform: translateX(0);
+}
+
+/* Dashboard content - Desktop view */
+.dashboard {
+    margin-left: 0;
+    padding: 90px 30px 40px;
+    min-height: 100vh;
+    transition: all 0.3s ease;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+/* Desktop - sidebar always visible */
+@media (min-width: 768px) {
+    .sidebar {
+        transform: translateX(0);
+        left: 0;
+    }
+    
+    .dashboard {
+        margin-left: 280px;
+        padding: 30px 40px;
+    }
+    
+    .menu-btn {
+        display: none;
+    }
+    
+    .overlay {
+        display: none;
+    }
+}
+
+/* Container for dashboard content */
+.dashboard .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Grid layout for cards */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-top: 25px;
+}
+
+/* Card improvements */
+.card {
+    background: rgba(17, 34, 64, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 25px;
+    border: 1px solid rgba(0, 198, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(0, 198, 255, 0.3);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+.progress-card {
+    background: linear-gradient(135deg, rgba(17, 34, 64, 0.9), rgba(10, 25, 47, 0.9));
+}
+
+/* Progress bar improvements */
+.progress-wrapper {
+    margin: 25px 0;
+}
+
+.progress-text {
+    display: block;
+    color: #00c6ff;
+    font-weight: 600;
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+}
+
+.progress-bar.large {
+    height: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar.large .progress {
+    height: 100%;
+    background: linear-gradient(90deg, #00c6ff, #0072ff);
+    border-radius: 10px;
+    transition: width 1s ease-in-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-bar.large .progress::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-image: linear-gradient(
+        -45deg,
+        rgba(255, 255, 255, 0.2) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0.2) 75%,
+        transparent 75%,
+        transparent
+    );
+    background-size: 50px 50px;
+    animation: move 2s linear infinite;
+}
+
+@keyframes move {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 50px 50px;
+    }
+}
+
+/* Suggestion box improvements */
+.suggestion-box {
+    background: rgba(0, 198, 255, 0.05);
+    border: 1px solid rgba(0, 198, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 30px;
+}
+
+.suggestion-box h3 {
+    color: #00c6ff;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.suggestion-box ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.suggestion-box li {
+    padding: 10px 0;
+    color: #ccd6f6;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.suggestion-box li:last-child {
+    border-bottom: none;
+}
+
+.suggestion-box li:hover {
+    color: #fff;
+    transform: translateX(5px);
+}
+
+.suggestion-box li i {
+    color: #00c6ff;
+    width: 20px;
+    text-align: center;
+}
+
+/* Roadmap improvements */
+.roadmap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.step {
+    flex: 1;
+    min-width: 120px;
+    padding: 14px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    text-align: center;
+    color: #8892b0;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.step:hover {
+    background: rgba(0, 198, 255, 0.1);
+    color: #00c6ff;
+    transform: translateY(-2px);
+}
+
+.step.active {
+    background: rgba(0, 198, 255, 0.15);
+    border-color: #00c6ff;
+    color: #00c6ff;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 198, 255, 0.2);
+}
+
+/* Quick actions improvements */
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.actions .btn {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.actions .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 198, 255, 0.3);
+}
+
+.actions .btn i {
+    font-size: 1.1rem;
+}
+
+/* Responsive improvements */
+@media (max-width: 1200px) {
+    .dashboard .container {
+        padding: 0 20px;
+    }
+}
+
+@media (max-width: 992px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .actions .btn {
+        min-width: 150px;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 280px;
+        transform: translateX(-100%);
+    }
+    
+    .sidebar.open {
+        transform: translateX(0);
+    }
+    
+    .dashboard {
+        margin-left: 0;
+        padding: 80px 20px 30px;
+        width: 100%;
+    }
+    
+    .menu-btn {
+        display: block;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1000;
+    }
+    
+    .card {
+        padding: 20px;
+    }
+    
+    .actions {
+        flex-direction: column;
+    }
+    
+    .actions .btn {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    .step {
+        min-width: calc(50% - 10px);
+    }
+}
+
+@media (max-width: 576px) {
+    .dashboard {
+        padding: 70px 15px 25px;
+    }
+    
+    .sidebar {
+        width: 260px;
+    }
+    
+    .progress-text {
+        font-size: 1rem;
+    }
+    
+    .suggestion-box {
+        padding: 15px;
+    }
+    
+    .suggestion-box li {
+        font-size: 0.9rem;
+    }
+    
+    .step {
+        min-width: 100%;
+    }
+    
+    .roadmap {
+        gap: 8px;
+    }
+}
+
+/* Alert card for profile completion */
+.alert-card {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    margin-top: 20px;
+    animation: pulseAlert 2s infinite;
+}
+
+@keyframes pulseAlert {
+    0%, 100% {
+        box-shadow: 0 0 0 rgba(255, 193, 7, 0);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 193, 7, 0.2);
+    }
+}
+
+.alert-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.alert-content i {
+    font-size: 24px;
+    color: #ffc107;
+}
+
+.alert-content > div {
+    flex: 1;
+    min-width: 200px;
+}
+
+.alert-content h4 {
+    color: #ffc107;
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+}
+
+.alert-content p {
+    color: #ccd6f6;
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.btn-small {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    background: linear-gradient(135deg, #ffc107, #ff9800);
+    border: none;
+    border-radius: 8px;
+    color: #0a192f;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-small:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 193, 7, 0.3);
+}
+
+/* Welcome message improvements */
+.card h2 {
+    color: #fff;
+    margin-bottom: 10px;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.card h2 i {
+    color: #00c6ff;
+}
+
+.subtitle {
+    color: #8892b0;
+    margin-bottom: 20px;
+    font-size: 1rem;
+}
+
+/* Ensure no horizontal scroll on mobile */
+@media (max-width: 768px) {
+    body {
+        overflow-x: hidden;
+    }
+    
+    .dashboard {
+        width: 100vw;
+        overflow-x: hidden;
+    }
+}
+
+/* Fix for iOS devices */
+@supports (-webkit-touch-callout: none) {
+    .sidebar {
+        height: -webkit-fill-available;
+    }
+}
